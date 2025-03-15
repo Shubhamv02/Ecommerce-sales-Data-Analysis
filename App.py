@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns 
 
 st.set_page_config(page_title="E-commerce Sales Dashboard", layout="wide")
 
@@ -16,11 +18,8 @@ if uploaded_file:
     st.success("✅ File Uploaded Successfully!")
     
     # Ensure correct data types
-    if 'Sales' in df.columns:
-        df['Sales'] = pd.to_numeric(df['Sales'], errors='coerce').fillna(0)
-    
-    if 'Order Date' in df.columns:
-        df['Order Date'] = pd.to_datetime(df['Order Date'], errors='coerce')
+   
+   
     
 
 category_selection = st.sidebar.multiselect("Select Category", df['title'].unique())
@@ -63,3 +62,24 @@ if st.sidebar.button("Submit"):
     st.write(filtered_df)
 
     st.write(f"**Total Count Of Filtered Data:{len(filtered_df)}**")
+
+    if not filtered_df.empty:
+        st.write("**Bar Chart: Product Counts by Category**")
+
+        # Count occurrences of each selected product title
+        product_counts = filtered_df['title'].value_counts()
+
+        # Plot bar chart
+        plt.figure(figsize=(10, 6))
+        plt.bar(product_counts.index, product_counts.values, color='purple')
+        plt.title("Product Counts by Category")
+        plt.xlabel("Product Title")
+        plt.ylabel("Count")
+        plt.xticks(rotation=45, ha='right')  # Rotate x labels for better readability
+        plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+        # Display in Streamlit
+        st.pyplot(plt)
+
+    else:
+        st.write("No data available for the selected filters.")
